@@ -180,39 +180,43 @@ matrix<T> matrix<T>::transpose() {
 
 // Row echelon form
 template<typename T>
-void matrix<T>::ref() {
+matrix<T> matrix<T>::ref() {
+    matrix result = *this;
     for (unsigned i = 0; i < rows; i++) {
         bool nonzero = false;
         for (unsigned k = i; k < rows; k++) {
-            if (this->mat[k][i] != 0)
+            if (result.mat[k][i] != 0)
                 nonzero = true;
         }
         if (nonzero) {
-            row_scalar(i, 1 / this->mat[i][i]);
+            result.row_scalar(i, 1 / result.mat[i][i]);
             for (unsigned j = i + 1; j < rows; j++) {
-                row_add_multiple(j, i, -1 * this->mat[j][i]);
+                result.row_add_multiple(j, i, -1 * result.mat[j][i]);
             }
         }
     }
+    return result;
 }
 
 // Reduced row echelon form
 template<typename T>
-void matrix<T>::rref() {
+matrix<T> matrix<T>::rref() {
+    matrix result = *this;
     for (unsigned i = 0; i < rows; i++) {
         bool nonzero = false;
         for (unsigned k = i; k < rows; k++) {
-            if (this->mat[k][i] != 0)
+            if (result.mat[k][i] != 0)
                 nonzero = true;
         }
         if (nonzero) {
-            row_scalar(i, 1 / this->mat[i][i]);
+            result.row_scalar(i, 1 / result.mat[i][i]);
             for (unsigned j = 0; j < rows; j++) {
                 if (i != j)
-                    row_add_multiple(j, i, -1 * this->mat[j][i]);
+                    result.row_add_multiple(j, i, -1 * result.mat[j][i]);
             }
         }
     }
+    return result;
 }
 
 // Multiply row by a scalar

@@ -39,8 +39,8 @@ public:
 
     // Matrix operations
     matrix<T> transpose();
-    void ref();
-    void rref();
+    matrix<T> ref();
+    matrix<T> rref();
 
 
     // Elementary row operations

@@ -15,7 +15,7 @@ int main() {
     };
     matrix<double> m(3,4,m_initial);
 
-    m.ref();
+    m = m.rref();
 
 
     for (unsigned i = 0; i < m.get_rows(); i++) {
