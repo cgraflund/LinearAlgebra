@@ -182,15 +182,15 @@ matrix<T> matrix<T>::transpose() {
 template<typename T>
 matrix<T> matrix<T>::ref() {
     matrix result = *this;
-    for (unsigned i = 0; i < rows; i++) {
+    for (unsigned i = 0; i < result.get_rows(); i++) {
         bool nonzero = false;
-        for (unsigned k = i; k < rows; k++) {
+        for (unsigned k = i; k < result.get_rows(); k++) {
             if (result.mat[k][i] != 0)
                 nonzero = true;
         }
         if (nonzero) {
-            result.row_scalar(i, 1 / result.mat[i][i]);
-            for (unsigned j = i + 1; j < rows; j++) {
+            result.row_divide_scalar(i, result.mat[i][i]);
+            for (unsigned j = i + 1; j < result.get_rows(); j++) {
                 result.row_add_multiple(j, i, -1 * result.mat[j][i]);
             }
         }
@@ -209,7 +209,7 @@ matrix<T> matrix<T>::rref() {
                 nonzero = true;
         }
         if (nonzero) {
-            result.row_scalar(i, 1 / result.mat[i][i]);
+            result.row_divide_scalar(i, result.mat[i][i]);
             for (unsigned j = 0; j < rows; j++) {
                 if (i != j)
                     result.row_add_multiple(j, i, -1 * result.mat[j][i]);
@@ -219,11 +219,66 @@ matrix<T> matrix<T>::rref() {
     return result;
 }
 
+// Determinant
+template<typename T>
+double matrix<T>::determinant() {
+    if (rows != cols)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    // Convert to ref and factor out the scalar multiples
+    matrix ref = *this;
+    double det = 1.;
+    for (unsigned i = 0; i < ref.get_rows(); i++) {
+        bool nonzero = false;
+        for (unsigned k = i; k < ref.get_rows(); k++) {
+            if (ref.mat[k][i] != 0)
+                nonzero = true;
+        }
+        if (nonzero) {
+            det *= ref.mat[i][i];
+            ref.row_divide_scalar(i, ref.mat[i][i]);
+
+            for (unsigned j = i + 1; j < ref.get_rows(); j++) {
+                ref.row_add_multiple(j, i, -1 * ref.mat[j][i]);
+            }
+        }
+    }
+
+    for (unsigned i = 0; i < rows; i++) {
+        det *= ref.mat[i][i];
+    }
+    return det;
+}
+
+// Returns a vector of the matrices eigenvalues
+template<typename T>
+std::vector<T> matrix<T>::eigenvalues() {
+    if (rows != cols)
+        return std::vector<T>();
+
+    matrix ref = *this;
+    ref = ref.ref();
+    std::vector<T> eigens;
+    for (unsigned i = 0; i < rows; i++) {
+        eigens.push_back(ref.mat[i][i]);
+    }
+    return eigens;
+}
+
+
 // Multiply row by a scalar
 template<typename T>
 void matrix<T>::row_scalar(const unsigned &row, const T &scalar) {
     for (unsigned i = 0; i < cols; i++) {
             this->mat[row][i] *= scalar;
+    }
+}
+
+// Dived row by a scalar
+template<typename T>
+void matrix<T>::row_divide_scalar(const unsigned &row, const T scalar) {
+    for (unsigned i=0; i < cols; i++) {
+        this->mat[row][i] /= scalar;
     }
 }
 
@@ -256,5 +311,6 @@ template<typename T>
 unsigned matrix<T>::get_cols() const {
     return this->cols;
 }
+
 
 #endif

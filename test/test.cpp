@@ -9,14 +9,15 @@ using namespace std;
 
 int main() {
     vector<vector<double>> m_initial {
-            {1,1,1,2},
-            {1,2,1,1},
-            {1,1,2,1}
+            {1,2,2},
+            {1,4,1},
+            {2,0,0}
     };
-    matrix<double> m(3,4,m_initial);
+    matrix<double> m(3,3,m_initial);
 
-    m = m.rref();
+    cout << "Determinant: " << m.determinant() << "\n";
 
+    m = m.ref();
 
     for (unsigned i = 0; i < m.get_rows(); i++) {
         for (unsigned j = 0; j < m.get_cols(); j++) {
@@ -24,6 +25,15 @@ int main() {
         }
         cout << "\n";
     }
+
+
+
+    vector<double> eigens = m.eigenvalues();
+    cout << "Eigenvalues: ";
+    for(double lambda: eigens) {
+        cout << lambda << ", ";
+    }
+
     return 0;
 }
 

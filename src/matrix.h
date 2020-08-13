@@ -6,6 +6,8 @@
 #define MATH_MATRIX_H
 
 #include <vector>
+#include <cmath>
+#include <limits>
 
 template <typename T> class matrix {
 private:
@@ -41,10 +43,13 @@ public:
     matrix<T> transpose();
     matrix<T> ref();
     matrix<T> rref();
+    double determinant();
+    std::vector<T> eigenvalues();
 
 
     // Elementary row operations
     void row_scalar(const unsigned& row, const T& scalar);
+    void row_divide_scalar(const unsigned& row, const T scalar);
     void row_add_multiple(const unsigned &row1, const unsigned &row2, const T& scalar);
 
     // Access elements
